@@ -1,0 +1,66 @@
+name: Deal watch
+
+on:
+  schedule:
+    # 6時間ごとに価格をチェック
+    - cron: "0 */6 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Check Rakuten prices for deals
+        id: check
+        env:
+          RAKUTEN_APPLICATION_ID: ${{ secrets.RAKUTEN_APPLICATION_ID }}
+          RAKUTEN_ACCESS_KEY: ${{ secrets.RAKUTEN_ACCESS_KEY }}
+        run: python scripts/check_deals.py
+
+      - name: Generate deal blog post + SNS drafts
+        if: steps.check.outputs.deals_found == 'true'
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python scripts/generate_deal_content.py
+
+      - name: Commit and push any changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          for f in _posts data/deal_watch_state.yml data/detected_deals.json data/latest_deal_drafts.json sns_drafts; do
+            if [ -e "$f" ]; then git add "$f"; fi
+          done
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "chore: タイムセール監視を実行"
+            git push
+          fi
+
+      - name: Open reminder issues for manual SNS posting
+        if: steps.check.outputs.deals_found == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          jq -c '.[]' data/latest_deal_drafts.json | while read -r item; do
+            slug=$(echo "$item" | jq -r '.slug')
+            name=$(echo "$item" | jq -r '.name')
+            gh issue create \
+              --title "SNS投稿してください: ${name} 特価速報" \
+              --body-file "sns_drafts/${slug}.md"
+          done

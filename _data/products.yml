@@ -8,41 +8,48 @@
 - key: jackery_1000
   name: Jackery ポータブル電源 1000 Plus
   note: 大容量モデルの定番。停電時の家電稼働や車中泊にも対応できる容量帯です。
+  keyword: "Jackery ポータブル電源 1000"
   amazon_url: "https://www.amazon.co.jp/s?k=Jackery%20%E3%83%9D%E3%83%BC%E3%82%BF%E3%83%96%E3%83%AB%E9%9B%BB%E6%BA%90%201000"
   rakuten_url: "https://search.rakuten.co.jp/search/mall/Jackery%20%E3%83%9D%E3%83%BC%E3%82%BF%E3%83%96%E3%83%AB%E9%9B%BB%E6%BA%90%201000/"
 
 - key: ecoflow_river2
   name: EcoFlow RIVER 2 Pro
   note: 急速充電と拡張性が特徴の中容量モデル。日常使いと防災の両立に向いています。
+  keyword: "EcoFlow RIVER 2 Pro ポータブル電源"
   amazon_url: "https://www.amazon.co.jp/s?k=EcoFlow%20RIVER%202%20Pro%20%E3%83%9D%E3%83%BC%E3%82%BF%E3%83%96%E3%83%AB%E9%9B%BB%E6%BA%90"
   rakuten_url: "https://search.rakuten.co.jp/search/mall/EcoFlow%20RIVER%202%20Pro%20%E3%83%9D%E3%83%BC%E3%82%BF%E3%83%96%E3%83%AB%E9%9B%BB%E6%BA%90/"
 
 - key: anker_767
   name: Anker 767 Portable Power Station
   note: 長寿命バッテリーが特徴の大容量モデル。防災備蓄として長期保管したい方向け。
+  keyword: "Anker 767 Portable Power Station"
   amazon_url: "https://www.amazon.co.jp/s?k=Anker%20767%20Portable%20Power%20Station"
   rakuten_url: "https://search.rakuten.co.jp/search/mall/Anker%20767%20Portable%20Power%20Station/"
 
 - key: solar_panel_100w
   name: ソーラーパネル 100W（ポータブル電源用・折りたたみ式）
   note: 停電が長引く場面でポータブル電源と組み合わせて使う携帯用パネル。
+  keyword: "ソーラーパネル 100W 折りたたみ"
   amazon_url: "https://www.amazon.co.jp/s?k=%E3%82%BD%E3%83%BC%E3%83%A9%E3%83%BC%E3%83%91%E3%83%8D%E3%83%AB%20100W%20%E6%8A%98%E3%82%8A%E3%81%9F%E3%81%9F%E3%81%BF"
   rakuten_url: "https://search.rakuten.co.jp/search/mall/%E3%82%BD%E3%83%BC%E3%83%A9%E3%83%BC%E3%83%91%E3%83%8D%E3%83%AB%20100W%20%E6%8A%98%E3%82%8A%E3%81%9F%E3%81%9F%E3%81%BF/"
 
 - key: bousai_backpack
   name: 防災リュック 1人用セット
   note: 最低限の持ち出し品がまとまったスターターセット。
+  keyword: "防災リュック 1人用 セット"
   amazon_url: "https://www.amazon.co.jp/s?k=%E9%98%B2%E7%81%BD%E3%83%AA%E3%83%A5%E3%83%83%E3%82%AF%201%E4%BA%BA%E7%94%A8%20%E3%82%BB%E3%83%83%E3%83%88"
   rakuten_url: "https://search.rakuten.co.jp/search/mall/%E9%98%B2%E7%81%BD%E3%83%AA%E3%83%A5%E3%83%83%E3%82%AF%201%E4%BA%BA%E7%94%A8%20%E3%82%BB%E3%83%83%E3%83%88/"
 
 - key: portable_toilet
   name: 簡易トイレ（凝固剤タイプ）
   note: 断水時に備える使い切りタイプの簡易トイレ。
+  keyword: "簡易トイレ 凝固剤 防災"
   amazon_url: "https://www.amazon.co.jp/s?k=%E7%B0%A1%E6%98%93%E3%83%88%E3%82%A4%E3%83%AC%20%E5%87%9D%E5%9B%BA%E5%89%A4%20%E9%98%B2%E7%81%BD"
   rakuten_url: "https://search.rakuten.co.jp/search/mall/%E7%B0%A1%E6%98%93%E3%83%88%E3%82%A4%E3%83%AC%20%E5%87%9D%E5%9B%BA%E5%89%A4%20%E9%98%B2%E7%81%BD/"
 
 - key: water_storage
   name: 非常用 保存水（5年保存）
   note: ローリングストックの基礎になる長期保存水。
+  keyword: "非常用 保存水 5年 2L"
   amazon_url: "https://www.amazon.co.jp/s?k=%E9%9D%9E%E5%B8%B8%E7%94%A8%20%E4%BF%9D%E5%AD%98%E6%B0%B4%205%E5%B9%B4%202L"
   rakuten_url: "https://search.rakuten.co.jp/search/mall/%E9%9D%9E%E5%B8%B8%E7%94%A8%20%E4%BF%9D%E5%AD%98%E6%B0%B4%205%E5%B9%B4%202L/"

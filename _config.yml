@@ -36,6 +36,7 @@ defaults:
 exclude:
   - scripts/
   - data/
+  - sns_drafts/
   - requirements.txt
   - "*.pyc"
   - venv/

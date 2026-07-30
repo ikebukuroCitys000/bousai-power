@@ -107,6 +107,52 @@ products: [jackery_1000, ecoflow_river2, 追加したkey]
 ---
 ```
 
+## タイムセール監視（自動）とSNS投稿（手動）
+
+`.github/workflows/deal-watch.yml` が6時間ごとに動き、`_data/products.yml` に登録された商品の楽天価格を監視します。値下がりを検知すると、ブログ記事とSNS用の下書きテキストを自動生成しますが、**SNSへの投稿自体は手動**です（Xの有料API化・Instagramの審査コストを避けるため、あえて自動投稿はしていません）。
+
+### 仕組み
+
+```
+6時間ごと（GitHub Actions cron）
+  ↓
+scripts/check_deals.py が楽天商品検索APIで現在価格を取得
+  ↓
+data/deal_watch_state.yml の前回価格と比較（10%以上の値下がりを検知）
+  ↓
+値下がりを検知した場合のみ：
+  scripts/generate_deal_content.py が Claude API で
+  ①速報ブログ記事 ②X用キャプション ③Instagram用キャプション を同時生成
+  ↓
+①は _posts/ に自動コミット→ブログに自動公開
+②③は sns_drafts/ に下書きとして保存
+  ↓
+検知した商品ごとにGitHub Issueを自動作成（コピペ用の下書き付き）
+  ↓
+Issueの通知を見て、ご自身の手でXやInstagramに投稿
+```
+
+### セットアップ
+
+1. [webservice.rakuten.co.jp/app/create](https://webservice.rakuten.co.jp/app/create) でアプリを新規作成
+2. 発行された **アプリID(applicationId)** と **アクセスキー(accessKey)** を控える
+3. リポジトリに以下の2つをSecretsとして登録
+
+```bash
+gh secret set RAKUTEN_APPLICATION_ID --repo ikebukuroCitys000/bousai-power
+gh secret set RAKUTEN_ACCESS_KEY --repo ikebukuroCitys000/bousai-power
+```
+
+（GitHub Web UIの Settings → Secrets and variables → Actions からでも登録可能です）
+
+### 運用時の注意
+
+- **初回実行時は「基準価格」を記録するだけで、値下がり検知はされません。** 2回目以降の実行から比較が始まります。
+- 値下がり判定の閾値は環境変数 `DEAL_DROP_THRESHOLD`（デフォルト0.1 = 10%）で調整できます。
+- 楽天の同一商品を継続して追跡できるよう、初回に検索でヒットした商品（itemCode）を `data/deal_watch_state.yml` に固定します。検索結果の順位変動で別の商品にすり替わることはありません。
+- Amazon側は、PA-APIが2026年5月に廃止され後継の「Creators API」に移行しましたが、**過去30日以内の売上実績がないとアクセスできない**仕様のため、現時点では未実装です（レポート内 §07 参照）。Amazonアソシエイトで売上が立ち始めた段階で追加を検討してください。
+- SNS投稿を自動化したくなった場合は、X APIの有料プラン契約・Instagram Graph APIのMeta審査（画像生成の仕組みも別途必要）が必要になります。
+
 ## 画像の入れ方
 
 現在の生成スクリプトはテキストのみを生成し、画像は自動生成しません。画像を追加したい場合は以下の方法があります。
