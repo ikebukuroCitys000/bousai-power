@@ -7,6 +7,9 @@ url: "https://ikebukuroCitys000.github.io"
 lang: ja
 timezone: Asia/Tokyo
 
+# Amazonアソシエイト・トラッキングID（審査通過後に設定。全商品リンクに自動付与されます）
+amazon_associate_tag: "bababauru-22"
+
 plugins:
   - jekyll-feed
   - jekyll-seo-tag

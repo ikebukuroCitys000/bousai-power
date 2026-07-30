@@ -28,7 +28,7 @@ layout: default
         <h3>{{ product.name }}</h3>
         {% if product.note %}<p>{{ product.note }}</p>{% endif %}
         <ul>
-          <li><a href="{{ product.amazon_url }}" rel="nofollow sponsored" target="_blank">Amazonで見る</a></li>
+          <li><a href="{% if site.amazon_associate_tag %}{{ product.amazon_url }}&tag={{ site.amazon_associate_tag }}{% else %}{{ product.amazon_url }}{% endif %}" rel="nofollow sponsored" target="_blank">Amazonで見る</a></li>
           <li><a href="{{ product.rakuten_url }}" rel="nofollow sponsored" target="_blank">楽天市場で見る</a></li>
         </ul>
       </div>
