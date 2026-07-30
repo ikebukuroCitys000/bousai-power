@@ -1,0 +1,136 @@
+---
+---
+
+:root {
+  --bg: #ffffff;
+  --fg: #1a1a1a;
+  --muted: #666666;
+  --border: #e5e5e5;
+  --accent: #0a6e4d;
+  --banner-bg: #fff8e1;
+  --banner-fg: #6b5400;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #14151a;
+    --fg: #e8e8e8;
+    --muted: #9a9a9a;
+    --border: #2a2b31;
+    --accent: #4fd1a5;
+    --banner-bg: #2a2410;
+    --banner-fg: #e8d68a;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif;
+  line-height: 1.8;
+}
+
+.wrap {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.site-header {
+  border-bottom: 1px solid var(--border);
+  padding: 16px 0;
+
+  .wrap {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .site-title {
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: var(--fg);
+    text-decoration: none;
+  }
+
+  .site-nav a {
+    margin-left: 16px;
+    font-size: 0.85rem;
+    color: var(--muted);
+    text-decoration: none;
+  }
+}
+
+main.wrap {
+  padding-top: 32px;
+  padding-bottom: 48px;
+  min-height: 60vh;
+}
+
+.disclosure-banner {
+  background: var(--banner-bg);
+  color: var(--banner-fg);
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-size: 0.85rem;
+  margin: 16px 0 24px;
+}
+
+.post-title, .page-title {
+  font-size: 1.6rem;
+  margin-bottom: 4px;
+}
+
+.post-meta {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.post-category {
+  margin-left: 8px;
+  padding: 2px 8px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.post-content, .page-content {
+  a { color: var(--accent); }
+  img { max-width: 100%; }
+}
+
+.post-list {
+  list-style: none;
+  padding: 0;
+
+  li {
+    display: flex;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .post-list-date {
+    color: var(--muted);
+    font-size: 0.85rem;
+    white-space: nowrap;
+  }
+
+  .post-list-link {
+    color: var(--fg);
+    text-decoration: none;
+  }
+}
+
+.site-footer {
+  border-top: 1px solid var(--border);
+  padding: 24px 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+
+  .footer-note { max-width: 640px; }
+}

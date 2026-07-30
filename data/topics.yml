@@ -1,0 +1,140 @@
+# 記事トピックキュー
+#
+# status: pending の記事から順にgenerate_article.pyが取り出し、公開すると published になり
+# published_date が記録されます。ネタが尽きないよう、pending の在庫を随時追加してください。
+
+- slug: portable-power-beginner-guide
+  title: ポータブル電源とは？初心者向け選び方完全ガイド
+  angle: 初めて購入する人向けに、容量・出力・充電方式などの基礎知識をやさしく解説する
+  keywords: [ポータブル電源, 選び方, 初心者, 容量]
+  category: 選び方ガイド
+  products: [jackery_1000, ecoflow_river2]
+  status: pending
+
+- slug: capacity-calculation
+  title: 停電時に必要な容量の計算方法（Wh・W早見表）
+  angle: 冷蔵庫・スマホ・扇風機などの消費電力からWh容量を逆算する具体的な方法を示す
+  keywords: [ポータブル電源, 容量計算, Wh, 停電]
+  category: 選び方ガイド
+  products: [jackery_1000, anker_767]
+  status: pending
+
+- slug: jackery-vs-ecoflow-vs-anker
+  title: Jackery・EcoFlow・Anker徹底比較｜自分に合うのはどれ？
+  angle: 主要3ブランドの特徴・価格帯・向いている人を比較表形式で整理する
+  keywords: [Jackery, EcoFlow, Anker, 比較]
+  category: 比較
+  products: [jackery_1000, ecoflow_river2, anker_767]
+  status: pending
+
+- slug: car-camping-power-station
+  title: 車中泊・キャンプで使えるポータブル電源の選び方
+  angle: 防災だけでなくアウトドア用途も両立させたい人向けの選定ポイント
+  keywords: [車中泊, キャンプ, ポータブル電源]
+  category: 活用シーン
+  products: [jackery_1000, ecoflow_river2]
+  status: pending
+
+- slug: solar-panel-combo
+  title: ソーラーパネル併用で災害時も安心な充電環境をつくる
+  angle: 停電が長引くケースを想定し、ソーラーパネルとの組み合わせ方を解説する
+  keywords: [ソーラーパネル, ポータブル電源, 太陽光充電]
+  category: 活用シーン
+  products: [solar_panel_100w, jackery_1000]
+  status: pending
+
+- slug: bousai-backpack-checklist-2026
+  title: 防災リュックに入れておきたい持ち出し品リスト2026年版
+  angle: 最新の推奨品目を踏まえた持ち出し袋の中身チェックリスト
+  keywords: [防災リュック, 持ち出し袋, チェックリスト]
+  category: 防災グッズ
+  products: [bousai_backpack, water_storage]
+  status: pending
+
+- slug: portable-toilet-guide
+  title: 簡易トイレ・非常用トイレの選び方と備蓄量の目安
+  angle: 断水時に困りやすいトイレ問題への備え方、1人あたりの必要個数の目安
+  keywords: [簡易トイレ, 非常用トイレ, 備蓄]
+  category: 防災グッズ
+  products: [portable_toilet]
+  status: pending
+
+- slug: rolling-stock-guide
+  title: 非常用飲料水・食料の備蓄「ローリングストック」入門
+  angle: 特別な非常食に頼りすぎない、日常の延長でできる備蓄方法を紹介する
+  keywords: [ローリングストック, 備蓄, 非常食, 飲料水]
+  category: 防災グッズ
+  products: [water_storage]
+  status: pending
+
+- slug: rental-vs-purchase
+  title: ポータブル電源はレンタルと購入どちらがお得？
+  angle: 短期利用と長期防災備蓄それぞれの観点からコストを比較する
+  keywords: [ポータブル電源, レンタル, 購入, 比較]
+  category: 選び方ガイド
+  products: [jackery_1000, ecoflow_river2]
+  status: pending
+
+- slug: nankai-trough-review
+  title: 南海トラフ地震臨時情報後に見直したい防災グッズ
+  angle: 情報発表を機に見直しが進んだ項目を、家庭でのチェック観点としてまとめる
+  keywords: [南海トラフ, 防災グッズ, 見直し]
+  category: 防災グッズ
+  products: [bousai_backpack, jackery_1000, water_storage]
+  status: pending
+
+- slug: vertical-evacuation-prep
+  title: 在宅避難（垂直避難）に必要な備えとは
+  angle: 避難所に行かず自宅で過ごす場合に必要になる備蓄・電源の考え方
+  keywords: [在宅避難, 垂直避難, 備え]
+  category: 防災グッズ
+  products: [jackery_1000, water_storage, portable_toilet]
+  status: pending
+
+- slug: high-rise-condo-bousai
+  title: マンション高層階の防災対策とポータブル電源の活用
+  angle: エレベーター停止・断水時の高層階特有の課題と備え方
+  keywords: [マンション防災, 高層階, 断水, ポータブル電源]
+  category: 活用シーン
+  products: [jackery_1000, portable_toilet, water_storage]
+  status: pending
+
+- slug: typhoon-season-checkup
+  title: 台風・停電シーズン前にやっておきたい防災点検
+  angle: シーズン前に行うべき点検項目をチェックリスト形式で提示する
+  keywords: [台風, 停電, 防災点検]
+  category: 防災グッズ
+  products: [jackery_1000, bousai_backpack]
+  status: pending
+
+- slug: power-station-lifespan-storage
+  title: ポータブル電源の寿命・劣化と正しい保管方法
+  angle: バッテリー劣化を防ぐ保管温度や定期充電の目安を解説する
+  keywords: [ポータブル電源, 寿命, 保管方法, 劣化]
+  category: 選び方ガイド
+  products: [anker_767, jackery_1000]
+  status: pending
+
+- slug: compact-power-station-for-solo-camp
+  title: 小型・軽量ポータブル電源おすすめ｜ソロキャンプ・女性にも
+  angle: 持ち運びやすさを重視する人向けに、軽量モデルの選定基準を紹介する
+  keywords: [小型ポータブル電源, ソロキャンプ, 軽量]
+  category: 活用シーン
+  products: [ecoflow_river2]
+  status: pending
+
+- slug: home-battery-vs-power-station
+  title: 家庭用蓄電池とポータブル電源の違いは？
+  angle: 工事が必要な据え置き型との違いを整理し、どちらが合うか判断できるようにする
+  keywords: [家庭用蓄電池, ポータブル電源, 違い]
+  category: 選び方ガイド
+  products: [jackery_1000, anker_767]
+  status: pending
+
+- slug: bousai-day-checkup
+  title: 防災の日（9月1日）に見直す我が家の防災グッズ
+  angle: 年に一度の点検タイミングとして、家族で確認すべき項目をまとめる
+  keywords: [防災の日, 防災グッズ, 見直し]
+  category: 防災グッズ
+  products: [bousai_backpack, water_storage, jackery_1000]
+  status: pending

@@ -1,0 +1,36 @@
+title: 防災ポータブル電源ラボ
+description: >-
+  ポータブル電源・防災グッズの選び方や比較を発信するブログです。
+  当サイトはAmazonアソシエイト・プログラムおよび楽天アフィリエイトの参加者です。
+baseurl: ""
+url: "" # GitHubリポジトリ作成後、 https://<ユーザー名>.github.io/<リポジトリ名> を設定してください
+lang: ja
+timezone: Asia/Tokyo
+
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll-sitemap
+
+permalink: /:year/:month/:day/:title/
+
+markdown: kramdown
+kramdown:
+  input: GFM
+
+show_excerpts: true
+
+defaults:
+  - scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: post
+
+exclude:
+  - scripts/
+  - data/
+  - requirements.txt
+  - "*.pyc"
+  - venv/
+  - README.md
