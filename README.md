@@ -64,16 +64,21 @@ Settings → Secrets and variables → Actions → New repository secret で、
 Actions タブから `Weekly article generation` ワークフローを手動実行（workflow_dispatch）して、
 記事が生成・コミットされることを確認してください。
 
-## Amazon・楽天アフィリエイトリンクの反映（URLの変更方法）
+## Amazon・楽天アフィリエイトの設定（審査通過後の反映方法）
 
-`_data/products.yml` の `amazon_url` / `rakuten_url` は、審査が通るまでの
-**非アフィリエイトの検索リンク**です。審査通過後、以下の手順で本番リンクに差し替えてください。
+`_data/products.yml` の `amazon_url` / `rakuten_url` は商品ページ・検索結果への通常URLです。
+トラッキングID自体は個別のURLではなく `_config.yml` に一元管理しており、ビルド時に全商品リンクへ自動付与されます。
 
-1. `_data/products.yml` を開く
-2. 対象商品の `amazon_url` / `rakuten_url` を、各プログラムの管理画面で発行されたトラッキング付きURLに書き換える
-3. コミット・プッシュ（または GitHub の Web UI 上で直接編集して保存すればそれだけで反映されます）
+```yaml
+# Amazonアソシエイト・トラッキングID（全Amazonリンクの末尾に &tag=... として自動付与）
+amazon_associate_tag: "bababauru-22"
 
-前述の通りこのファイルはビルド時に全記事で共通参照されるため、**1箇所を直すだけで既存記事・新規記事の両方に反映されます。**
+# 楽天アフィリエイトID（「どこでもリンク」形式 https://hb.afl.rakuten.co.jp/hgc/{ID}/?pc=... で全楽天リンクをラップ）
+rakuten_affiliate_id: "562f878b.0286961a.562f878c.30d1c03c"
+```
+
+IDを変更・更新したい場合は、この2行を書き換えてコミット・プッシュするだけで、既存記事・新規記事の両方に反映されます。
+（楽天IDは affiliate.rakuten.co.jp で何らかのリンクを1つ生成し、`https://hb.afl.rakuten.co.jp/hgc/`の直後から次の`/`までの文字列を控えれば確認できます。実際にリダイレクトを辿って `scid=af_pc_etc` 等の追跡パラメータが付与されることを確認済みです。）
 
 審査は一定量のコンテンツがあるサイトの方が通りやすいため、記事が数本公開された状態で申し込むことを推奨します。
 Amazonアソシエイトは登録後180日以内に一定件数の売上がないとアカウントがクローズされる規定があるため、
