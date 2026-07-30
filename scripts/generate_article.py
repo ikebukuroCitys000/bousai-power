@@ -18,7 +18,6 @@ import anthropic
 
 ROOT = Path(__file__).resolve().parent.parent
 TOPICS_PATH = ROOT / "data" / "topics.yml"
-PRODUCTS_PATH = ROOT / "data" / "products.yml"
 POSTS_DIR = ROOT / "_posts"
 
 MODEL = os.environ.get("ARTICLE_MODEL", "claude-haiku-4-5-20251001")
@@ -34,23 +33,6 @@ def load_yaml(path):
 def save_yaml(path, data):
     with open(path, "w", encoding="utf-8") as f:
         yaml.safe_dump(data, f, allow_unicode=True, sort_keys=False)
-
-
-def build_product_block(product_keys, products_by_key):
-    if not product_keys:
-        return ""
-    lines = ["", "## 関連商品", ""]
-    for key in product_keys:
-        product = products_by_key.get(key)
-        if not product:
-            continue
-        lines.append(f"### {product['name']}")
-        if product.get("note"):
-            lines.append(product["note"])
-        lines.append(f"- [Amazonで見る]({product['amazon_url']})")
-        lines.append(f"- [楽天市場で見る]({product['rakuten_url']})")
-        lines.append("")
-    return "\n".join(lines)
 
 
 def generate_body(client, topic):
@@ -84,7 +66,6 @@ def main():
     client = anthropic.Anthropic(api_key=api_key)
 
     topics = load_yaml(TOPICS_PATH)
-    products_by_key = {p["key"]: p for p in load_yaml(PRODUCTS_PATH)}
 
     pending = [t for t in topics if t.get("status") == "pending"]
     if not pending:
@@ -97,16 +78,14 @@ def main():
     for topic in pending[:POSTS_PER_RUN]:
         print(f"生成中: {topic['title']}")
         body = generate_body(client, topic)
-        product_block = build_product_block(topic.get("products", []), products_by_key)
 
-        front_matter_lines = [
-            "---",
-            f'title: "{topic["title"]}"',
-            f'categories: [{topic.get("category", "ポータブル電源・防災")}]',
-            "---",
-            "",
-        ]
-        content = "\n".join(front_matter_lines) + body + "\n" + product_block + "\n"
+        front_matter = {
+            "title": topic["title"],
+            "categories": [topic.get("category", "ポータブル電源・防災")],
+            "products": topic.get("products", []),
+        }
+        front_matter_yaml = yaml.safe_dump(front_matter, allow_unicode=True, sort_keys=False)
+        content = f"---\n{front_matter_yaml}---\n\n{body}\n"
 
         filename = f"{today.isoformat()}-{topic['slug']}.md"
         path = POSTS_DIR / filename

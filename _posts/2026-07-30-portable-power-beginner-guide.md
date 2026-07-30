@@ -1,6 +1,7 @@
 ---
 title: "ポータブル電源とは？初心者向け選び方完全ガイド"
 categories: [選び方ガイド]
+products: [jackery_1000, ecoflow_river2]
 ---
 ## ポータブル電源とは何か
 
@@ -101,16 +102,4 @@ categories: [選び方ガイド]
 また、保存環境も重要です。高温や多湿を避け、定期的に充電を行うことで、長期間にわたって性能を維持しやすくなります。
 
 初心者であっても、基本的な知識を理解した上で選択することで、自分の生活に最適なポータブル電源との出会いは十分可能です。この記事が皆さんの選択の手助けになれば幸いです。
-
-## 関連商品
-
-### Jackery ポータブル電源 1000 Plus
-大容量モデルの定番。停電時の家電稼働や車中泊にも対応できる容量帯です。
-- [Amazonで見る](https://www.amazon.co.jp/s?k=Jackery%20%E3%83%9D%E3%83%BC%E3%82%BF%E3%83%96%E3%83%AB%E9%9B%BB%E6%BA%90%201000)
-- [楽天市場で見る](https://search.rakuten.co.jp/search/mall/Jackery%20%E3%83%9D%E3%83%BC%E3%82%BF%E3%83%96%E3%83%AB%E9%9B%BB%E6%BA%90%201000/)
-
-### EcoFlow RIVER 2 Pro
-急速充電と拡張性が特徴の中容量モデル。日常使いと防災の両立に向いています。
-- [Amazonで見る](https://www.amazon.co.jp/s?k=EcoFlow%20RIVER%202%20Pro%20%E3%83%9D%E3%83%BC%E3%82%BF%E3%83%96%E3%83%AB%E9%9B%BB%E6%BA%90)
-- [楽天市場で見る](https://search.rakuten.co.jp/search/mall/EcoFlow%20RIVER%202%20Pro%20%E3%83%9D%E3%83%BC%E3%82%BF%E3%83%96%E3%83%AB%E9%9B%BB%E6%BA%90/)
 

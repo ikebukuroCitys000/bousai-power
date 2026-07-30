@@ -17,4 +17,23 @@ layout: default
   <div class="post-content">
     {{ content }}
   </div>
+
+  {% if page.products %}
+  <div class="related-products">
+    <h2>関連商品</h2>
+    {% for key in page.products %}
+      {% assign product = site.data.products | where: "key", key | first %}
+      {% if product %}
+      <div class="product-block">
+        <h3>{{ product.name }}</h3>
+        {% if product.note %}<p>{{ product.note }}</p>{% endif %}
+        <ul>
+          <li><a href="{{ product.amazon_url }}" rel="nofollow sponsored" target="_blank">Amazonで見る</a></li>
+          <li><a href="{{ product.rakuten_url }}" rel="nofollow sponsored" target="_blank">楽天市場で見る</a></li>
+        </ul>
+      </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+  {% endif %}
 </article>

@@ -12,7 +12,7 @@ scripts/generate_article.py が data/topics.yml から次の記事ネタを取�
   ↓
 Claude API（Haiku 4.5）が記事本文を生成
   ↓
-data/products.yml の商品情報を使って「関連商品」セクションを自動挿入
+記事のフロントマターに関連商品のkeyを記録（例: products: [jackery_1000]）
   ↓
 _posts/ に Markdown ファイルを作成し、GitHub にコミット・プッシュ
   ↓
@@ -20,6 +20,8 @@ GitHub Pages が自動的に再ビルドして公開
 ```
 
 サイトは Jekyll（GitHub Pages 標準機能）でビルドされます。ローカルでのビルドは不要です。
+
+**「関連商品」セクションは記事ファイルに直接書き込まれるのではなく、`_data/products.yml` を毎回のビルド時に参照して表示されます。** そのため `_data/products.yml` の1箇所を編集するだけで、過去に公開済みの記事も含めて全記事のリンクが一括で更新されます（審査通過後にリンクを差し替える際、記事を1本ずつ直す必要はありません）。
 
 ## 月あたりのコスト目安
 
@@ -62,17 +64,56 @@ Settings → Secrets and variables → Actions → New repository secret で、
 Actions タブから `Weekly article generation` ワークフローを手動実行（workflow_dispatch）して、
 記事が生成・コミットされることを確認してください。
 
-## Amazon・楽天アフィリエイトの反映
+## Amazon・楽天アフィリエイトリンクの反映（URLの変更方法）
 
-`data/products.yml` の `amazon_url` / `rakuten_url` は、審査が通るまでの
+`_data/products.yml` の `amazon_url` / `rakuten_url` は、審査が通るまでの
 **非アフィリエイトの検索リンク**です。審査通過後、以下の手順で本番リンクに差し替えてください。
 
-- **Amazon アソシエイト**: 管理画面でリンクを生成し、`amazon_url` を発行されたトラッキング付きURLに置き換える
-- **楽天アフィリエイト**: 「リンク自動作成」機能で発行されたリンクに置き換える
+1. `_data/products.yml` を開く
+2. 対象商品の `amazon_url` / `rakuten_url` を、各プログラムの管理画面で発行されたトラッキング付きURLに書き換える
+3. コミット・プッシュ（または GitHub の Web UI 上で直接編集して保存すればそれだけで反映されます）
+
+前述の通りこのファイルはビルド時に全記事で共通参照されるため、**1箇所を直すだけで既存記事・新規記事の両方に反映されます。**
 
 審査は一定量のコンテンツがあるサイトの方が通りやすいため、記事が数本公開された状態で申し込むことを推奨します。
 Amazonアソシエイトは登録後180日以内に一定件数の売上がないとアカウントがクローズされる規定があるため、
 申込みのタイミングは計画的に。
+
+## 商品リンクの追加方法（新しい商品を紹介したいとき）
+
+1. `_data/products.yml` に新しいエントリを追加する
+
+```yaml
+- key: 一意の識別子（英数字とアンダースコアのみ）
+  name: 商品名
+  note: 一言紹介文（任意）
+  amazon_url: "https://..."
+  rakuten_url: "https://..."
+```
+
+2. `data/topics.yml` の該当トピックの `products:` にその `key` を追加する（新規生成される記事に反映）
+3. 既存の記事に追加したい場合は、その記事ファイルのフロントマターにある `products:` に `key` を追加する
+
+```yaml
+---
+title: "..."
+categories: [...]
+products: [jackery_1000, ecoflow_river2, 追加したkey]
+---
+```
+
+## 画像の入れ方
+
+現在の生成スクリプトはテキストのみを生成し、画像は自動生成しません。画像を追加したい場合は以下の方法があります。
+
+- **商品画像**: Amazon・楽天それぞれのアフィリエイト管理画面には、審査通過後に「バナー画像＋アフィリエイトリンク」を自動生成してくれる機能があります（Amazonの場合はSiteStripe、楽天の場合はリンク自動作成ツール）。この画像はそのまま利用が許諾されているため、Amazon商品ページの画像を直接保存して使うより安全です。
+- **記事の挿絵・オリジナル画像**: `assets/images/` フォルダを作成し、画像ファイルを置いた上で、記事のMarkdown本文に以下のように記述します。
+
+```markdown
+![説明文]({{ '/assets/images/ファイル名.jpg' | relative_url }})
+```
+
+`{{ '...' | relative_url }}` を付けることで、`baseurl`（`/bousai-power-affiliate`）が自動的に付与され、正しいパスになります。単純な `![説明文](/assets/images/xxx.jpg)` だと、パスがズレて表示されないのでご注意ください。
 
 ## 法令・規約上必須の対応（すでに反映済み）
 
@@ -93,7 +134,7 @@ Amazon・楽天それぞれの規約で要求される正確な文言は変更�
   angle: どんな切り口で書くか
   keywords: [キーワード1, キーワード2]
   category: カテゴリ名
-  products: [products.ymlのkeyを列挙]
+  products: [_data/products.ymlのkeyを列挙]
   status: pending
 ```
 

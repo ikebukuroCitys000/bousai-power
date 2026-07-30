@@ -103,6 +103,34 @@ main.wrap {
   img { max-width: 100%; }
 }
 
+.related-products {
+  margin-top: 32px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+
+  h2 { font-size: 1.15rem; }
+
+  .product-block {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+
+    h3 { font-size: 1rem; margin: 0 0 6px; }
+    p { margin: 0 0 8px; color: var(--muted); font-size: 0.9rem; }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      gap: 16px;
+    }
+
+    a { color: var(--accent); font-size: 0.9rem; }
+  }
+}
+
 .post-list {
   list-style: none;
   padding: 0;

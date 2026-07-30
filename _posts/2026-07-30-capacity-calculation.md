@@ -1,6 +1,7 @@
 ---
 title: "停電時に必要な容量の計算方法（Wh・W早見表）"
 categories: [選び方ガイド]
+products: [jackery_1000, anker_767]
 ---
 ## 停電に備えるために必要な容量の考え方
 
@@ -97,16 +98,4 @@ categories: [選び方ガイド]
 ## 最後に
 
 ポータブル電源の容量選びは、「何に使うか」「どのくらいの時間」という生活シーンの具体的なイメージから始まります。一度このプロセスを経ると、自分たちの家庭に最適な容量の目安が自然と見えてきます。停電への備えは、こうした現実的な計算に基づいた選択こそが、実際の有事の際に頼りになるものです。
-
-## 関連商品
-
-### Jackery ポータブル電源 1000 Plus
-大容量モデルの定番。停電時の家電稼働や車中泊にも対応できる容量帯です。
-- [Amazonで見る](https://www.amazon.co.jp/s?k=Jackery%20%E3%83%9D%E3%83%BC%E3%82%BF%E3%83%96%E3%83%AB%E9%9B%BB%E6%BA%90%201000)
-- [楽天市場で見る](https://search.rakuten.co.jp/search/mall/Jackery%20%E3%83%9D%E3%83%BC%E3%82%BF%E3%83%96%E3%83%AB%E9%9B%BB%E6%BA%90%201000/)
-
-### Anker 767 Portable Power Station
-長寿命バッテリーが特徴の大容量モデル。防災備蓄として長期保管したい方向け。
-- [Amazonで見る](https://www.amazon.co.jp/s?k=Anker%20767%20Portable%20Power%20Station)
-- [楽天市場で見る](https://search.rakuten.co.jp/search/mall/Anker%20767%20Portable%20Power%20Station/)
 
