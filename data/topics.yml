@@ -39,7 +39,8 @@
   - jackery_1000
   - ecoflow_river2
   - anker_767
-  status: pending
+  status: published
+  published_date: '2026-07-30'
 - slug: car-camping-power-station
   title: 車中泊・キャンプで使えるポータブル電源の選び方
   angle: 防災だけでなくアウトドア用途も両立させたい人向けの選定ポイント
@@ -51,7 +52,8 @@
   products:
   - jackery_1000
   - ecoflow_river2
-  status: pending
+  status: published
+  published_date: '2026-07-30'
 - slug: solar-panel-combo
   title: ソーラーパネル併用で災害時も安心な充電環境をつくる
   angle: 停電が長引くケースを想定し、ソーラーパネルとの組み合わせ方を解説する
