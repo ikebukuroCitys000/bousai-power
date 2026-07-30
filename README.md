@@ -48,9 +48,9 @@ gh repo create <リポジトリ名> --public --source=. --push
 リポジトリの Settings → Pages で、Source を「Deploy from a branch」、
 Branch を `main` / `/ (root)` に設定してください。
 
-### 3. `_config.yml` の `url` を更新
+### 3. `_config.yml` の `url` / `baseurl`
 
-公開URL（`https://<ユーザー名>.github.io/<リポジトリ名>`）を `url:` に設定してください。
+公開URL: https://bababananaman.github.io/bousai-power-affiliate/ （設定済み）
 
 ### 4. Claude APIキーをGitHub Secretsに登録
 
