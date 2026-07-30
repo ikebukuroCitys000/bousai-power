@@ -10,6 +10,9 @@ timezone: Asia/Tokyo
 # Amazonアソシエイト・トラッキングID（審査通過後に設定。全商品リンクに自動付与されます）
 amazon_associate_tag: "bababauru-22"
 
+# 楽天アフィリエイトID（「どこでもリンク」形式で全商品リンクに自動付与されます）
+rakuten_affiliate_id: "562f878b.0286961a.562f878c.30d1c03c"
+
 plugins:
   - jekyll-feed
   - jekyll-seo-tag
