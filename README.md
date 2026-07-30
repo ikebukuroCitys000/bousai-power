@@ -52,7 +52,7 @@ Branch を `main` / `/ (root)` に設定してください。
 
 ### 3. `_config.yml` の `url` / `baseurl`
 
-公開URL: https://bababananaman.github.io/bousai-power-affiliate/ （設定済み）
+公開URL: https://ikebukuroCitys000.github.io/bousai-power/ （設定済み）
 
 ### 4. Claude APIキーをGitHub Secretsに登録
 
@@ -113,7 +113,7 @@ products: [jackery_1000, ecoflow_river2, 追加したkey]
 ![説明文]({{ '/assets/images/ファイル名.jpg' | relative_url }})
 ```
 
-`{{ '...' | relative_url }}` を付けることで、`baseurl`（`/bousai-power-affiliate`）が自動的に付与され、正しいパスになります。単純な `![説明文](/assets/images/xxx.jpg)` だと、パスがズレて表示されないのでご注意ください。
+`{{ '...' | relative_url }}` を付けることで、`baseurl`（`/bousai-power`）が自動的に付与され、正しいパスになります。単純な `![説明文](/assets/images/xxx.jpg)` だと、パスがズレて表示されないのでご注意ください。
 
 ## 法令・規約上必須の対応（すでに反映済み）
 
