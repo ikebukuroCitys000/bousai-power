@@ -9,6 +9,15 @@ This only produces the *content* to build from — actual slide design
 (e.g. in Canva) and video editing/filming (e.g. in CapCut) stay manual,
 and so does posting itself.
 
+Carousel slide count is fixed at 7 (hook, 5x body, CTA) so the output
+also lands in sns_drafts/canva_carousel.csv in wide format — one row
+per post, with a slide1_headline/slide1_body ... slide7_headline/
+slide7_body column pair per slide. Build a matching 7-frame Canva
+template with those field names tagged, then use Canva's "Bulk create"
+to generate all slides for all posts in one pass. Reels have no Canva
+equivalent (no CSV-driven video timeline), so those stay in the
+per-post .md file only.
+
 Usage:
     ANTHROPIC_API_KEY=... python3 scripts/generate_instagram_content.py
     ANTHROPIC_API_KEY=... python3 scripts/generate_instagram_content.py <slug> [<slug> ...]
@@ -18,6 +27,7 @@ have a sns_drafts/<slug>-instagram.md file. Pass one or more slugs
 (the post filename without the .md extension) to force regeneration for
 specific posts.
 """
+import csv
 import json
 import os
 import re
@@ -30,8 +40,11 @@ import yaml
 ROOT = Path(__file__).resolve().parent.parent
 POSTS_DIR = ROOT / "_posts"
 DRAFTS_DIR = ROOT / "sns_drafts"
+CANVA_CSV_PATH = DRAFTS_DIR / "canva_carousel.csv"
 
 MODEL = os.environ.get("ARTICLE_MODEL", "claude-haiku-4-5-20251001")
+
+SLIDE_COUNT = 7  # 1:フック 2-6:本文 7:CTA。Canvaの固定7枚テンプレートに合わせる
 
 INSTAGRAM_SCHEMA = {
     "type": "object",
@@ -41,6 +54,8 @@ INSTAGRAM_SCHEMA = {
             "properties": {
                 "slides": {
                     "type": "array",
+                    "minItems": SLIDE_COUNT,
+                    "maxItems": SLIDE_COUNT,
                     "items": {
                         "type": "object",
                         "properties": {
@@ -109,10 +124,10 @@ def generate_instagram_content(client, title, body):
 以下のブログ記事をもとに、Instagramの「カルーセル投稿」と「リール(Reels)投稿」の台本を作成してください。
 
 # カルーセル投稿の条件
-- スライドは6〜8枚
+- スライドは必ずちょうど7枚（Canvaの固定テンプレートに流し込むため、多くても少なくてもいけない）
 - 1枚目は「保存したくなる」フック（数字・断言・意外性のいずれかを使う）
-- 2枚目以降は記事の要点を1スライド1メッセージで区切る（見出し10〜16文字程度、本文は1〜2文で簡潔に）
-- 最後のスライドは「保存」「フォロー」「プロフィールのリンクへ」等の行動喚起
+- 2〜6枚目は記事の要点を1スライド1メッセージで区切る（見出し10〜16文字程度、本文は1〜2文で簡潔に）
+- 7枚目は「保存」「フォロー」「プロフィールのリンクへ」等の行動喚起
 - キャプションは記事の要約＋一言の共感/問いかけ、200文字程度
 - ハッシュタグは10〜15個。大きいタグ（フォロワー数が多い一般的なタグ）とニッチなタグを混ぜる。参考例: {', '.join(HASHTAG_REFERENCE)}（これに限らず記事内容に合うものを自由に含めてよい）
 
@@ -169,6 +184,43 @@ def render_draft(slug, title, content):
     return "\n".join(lines)
 
 
+def csv_fieldnames():
+    fields = ["post_slug", "title"]
+    for i in range(1, SLIDE_COUNT + 1):
+        fields += [f"slide{i}_headline", f"slide{i}_body"]
+    fields += ["caption", "hashtags"]
+    return fields
+
+
+def csv_row_for(slug, title, content):
+    row = {"post_slug": slug, "title": title}
+    for i, slide in enumerate(content["carousel"]["slides"], start=1):
+        row[f"slide{i}_headline"] = slide["headline"]
+        row[f"slide{i}_body"] = slide["body"]
+    row["caption"] = content["carousel"]["caption"]
+    row["hashtags"] = " ".join(content["carousel"]["hashtags"])
+    return row
+
+
+def update_canva_csv(rows_by_slug):
+    """Canvaの「Bulk create」にそのまま読み込める横持ちCSVを、
+    post_slugをキーに追記/上書きする（既存行は保持したまま更新）。"""
+    fieldnames = csv_fieldnames()
+    existing = {}
+    if CANVA_CSV_PATH.exists():
+        with open(CANVA_CSV_PATH, newline="", encoding="utf-8-sig") as f:
+            for row in csv.DictReader(f):
+                existing[row["post_slug"]] = row
+
+    existing.update(rows_by_slug)
+
+    with open(CANVA_CSV_PATH, "w", newline="", encoding="utf-8-sig") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+        for row in existing.values():
+            writer.writerow(row)
+
+
 def main():
     api_key = os.environ.get("ANTHROPIC_API_KEY")
     if not api_key:
@@ -194,6 +246,7 @@ def main():
 
     client = anthropic.Anthropic(api_key=api_key)
     created = []
+    csv_rows = {}
 
     for path in targets:
         parsed = parse_post(path)
@@ -211,10 +264,16 @@ def main():
         draft_path = DRAFTS_DIR / f"{slug}-instagram.md"
         draft_path.write_text(draft_text, encoding="utf-8")
         created.append(draft_path.name)
+        csv_rows[slug] = csv_row_for(slug, title, content)
+
+    if csv_rows:
+        update_canva_csv(csv_rows)
 
     print("作成したInstagram下書き:")
     for name in created:
         print(f" - sns_drafts/{name}")
+    if csv_rows:
+        print(f" - sns_drafts/canva_carousel.csv （{len(csv_rows)}件を追記/更新）")
 
 
 if __name__ == "__main__":
