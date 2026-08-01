@@ -30,6 +30,7 @@ jobs:
         env:
           RAKUTEN_APPLICATION_ID: ${{ secrets.RAKUTEN_APPLICATION_ID }}
           RAKUTEN_ACCESS_KEY: ${{ secrets.RAKUTEN_ACCESS_KEY }}
+          DEAL_DEBUG: "1"
         run: python scripts/check_deals.py
 
       - name: Generate deal blog post + SNS drafts
