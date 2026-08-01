@@ -54,8 +54,9 @@ INSTAGRAM_SCHEMA = {
             "properties": {
                 "slides": {
                     "type": "array",
-                    "minItems": SLIDE_COUNT,
-                    "maxItems": SLIDE_COUNT,
+                    # 構造化出力のJSON SchemaはminItems/maxItemsに0/1以外を指定できない
+                    # （2に設定しただけで400になる）。枚数はプロンプト指示＋実行時の
+                    # 補正（pad_or_trim_slides）で7枚に揃える。
                     "items": {
                         "type": "object",
                         "properties": {
@@ -151,7 +152,17 @@ def generate_instagram_content(client, title, body):
         messages=[{"role": "user", "content": prompt}],
     )
     text = next(b.text for b in response.content if b.type == "text")
-    return json.loads(text)
+    content = json.loads(text)
+    content["carousel"]["slides"] = pad_or_trim_slides(content["carousel"]["slides"])
+    return content
+
+
+def pad_or_trim_slides(slides):
+    """スキーマでは強制できないため、7枚ちょうどになるよう実行時に揃える。"""
+    slides = list(slides[:SLIDE_COUNT])
+    while len(slides) < SLIDE_COUNT:
+        slides.append({"headline": "続きはブログで", "body": "詳しくはプロフィールのリンクからブログ記事をご覧ください。"})
+    return slides
 
 
 def render_draft(slug, title, content):
