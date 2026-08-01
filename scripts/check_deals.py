@@ -71,7 +71,10 @@ def fetch_item(application_id, access_key, keyword=None, item_code=None):
     else:
         raise ValueError("keyword or item_code is required")
 
-    resp = requests.get(API_ENDPOINT, params=params, timeout=15)
+    # Rakuten Web Serviceのアプリ登録時に "Allowed websites" として
+    # 登録したドメインと一致させておく（未登録だと弾かれる可能性があるため）
+    headers = {"Referer": "https://ikebukuroCitys000.github.io/bousai-power/"}
+    resp = requests.get(API_ENDPOINT, params=params, headers=headers, timeout=15)
     resp.raise_for_status()
     data = resp.json()
     items = data.get("items", [])
