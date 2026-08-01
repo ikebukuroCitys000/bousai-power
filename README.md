@@ -107,6 +107,29 @@ products: [jackery_1000, ecoflow_river2, 追加したkey]
 ---
 ```
 
+## Instagram（カルーセル・リール）のコンテンツ自動生成
+
+`.github/workflows/instagram-content.yml` が毎日07:00 JSTに動き、`sns_drafts/` にInstagram下書きがまだ無いブログ記事を見つけて、Claude APIで**カルーセル投稿**と**リール投稿**の台本を自動生成します。**画像・動画の制作、投稿そのものは手動**です。
+
+### 生成される内容
+
+- **カルーセル**: 6〜8枚のスライド構成（見出し＋本文）＋キャプション＋ハッシュタグ10〜15個
+- **リール**: 15〜30秒想定のシーン割り（映像指示＋画面テキスト＋秒数）＋フック文＋キャプション＋ハッシュタグ
+
+出力先は `sns_drafts/<記事のスラッグ>-instagram.md`。この内容をCanva（カルーセル）やCapCut（リール）に流し込んで手作業で仕上げ、投稿してください。
+
+### 手動実行・特定記事の再生成
+
+```bash
+# 未生成の記事だけまとめて処理
+ANTHROPIC_API_KEY=sk-ant-... python3 scripts/generate_instagram_content.py
+
+# 特定の記事だけ強制的に再生成したい場合（スラッグ = _postsのファイル名から.mdを除いたもの）
+ANTHROPIC_API_KEY=sk-ant-... python3 scripts/generate_instagram_content.py 2026-07-30-capacity-calculation
+```
+
+GitHub Actionsから手動実行する場合は、Actionsタブの `Instagram content` ワークフローから `Run workflow` を押してください。
+
 ## タイムセール監視（自動）とSNS投稿（手動）
 
 `.github/workflows/deal-watch.yml` が6時間ごとに動き、`_data/products.yml` に登録された商品の楽天価格を監視します。値下がりを検知すると、ブログ記事とSNS用の下書きテキストを自動生成しますが、**SNSへの投稿自体は手動**です（Xの有料API化・Instagramの審査コストを避けるため、あえて自動投稿はしていません）。
