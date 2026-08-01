@@ -62,8 +62,9 @@ INSTAGRAM_SCHEMA = {
                         "properties": {
                             "headline": {"type": "string"},
                             "body": {"type": "string"},
+                            "image_prompt": {"type": "string"},
                         },
-                        "required": ["headline", "body"],
+                        "required": ["headline", "body", "image_prompt"],
                         "additionalProperties": False,
                     },
                 },
@@ -129,6 +130,7 @@ def generate_instagram_content(client, title, body):
 - 1枚目は「保存したくなる」フック（数字・断言・意外性のいずれかを使う）
 - 2〜6枚目は記事の要点を1スライド1メッセージで区切る（見出し10〜16文字程度、本文は1〜2文で簡潔に）
 - 7枚目は「保存」「フォロー」「プロフィールのリンクへ」等の行動喚起
+- 各スライドの image_prompt には、その内容を視覚的に補うイラスト・写真の指示を1文で書く（例:「停電した部屋でスマホの充電が切れて困っている人のフラットイラスト」）。実在の人物・商標ロゴを指定しない。Canvaの画像生成（マジック生成）にそのまま使える具体性を持たせる
 - キャプションは記事の要約＋一言の共感/問いかけ、200文字程度
 - ハッシュタグは10〜15個。大きいタグ（フォロワー数が多い一般的なタグ）とニッチなタグを混ぜる。参考例: {', '.join(HASHTAG_REFERENCE)}（これに限らず記事内容に合うものを自由に含めてよい）
 
@@ -161,7 +163,11 @@ def pad_or_trim_slides(slides):
     """スキーマでは強制できないため、7枚ちょうどになるよう実行時に揃える。"""
     slides = list(slides[:SLIDE_COUNT])
     while len(slides) < SLIDE_COUNT:
-        slides.append({"headline": "続きはブログで", "body": "詳しくはプロフィールのリンクからブログ記事をご覧ください。"})
+        slides.append({
+            "headline": "続きはブログで",
+            "body": "詳しくはプロフィールのリンクからブログ記事をご覧ください。",
+            "image_prompt": "プロフィールリンクを指差すシンプルなイラスト",
+        })
     return slides
 
 
@@ -170,6 +176,7 @@ def render_draft(slug, title, content):
     for i, slide in enumerate(content["carousel"]["slides"], start=1):
         lines.append(f"**スライド{i}: {slide['headline']}**")
         lines.append(slide["body"])
+        lines.append(f"_挿絵の指示: {slide['image_prompt']}_")
         lines.append("")
     lines.append("**キャプション**")
     lines.append(content["carousel"]["caption"])
@@ -198,7 +205,7 @@ def render_draft(slug, title, content):
 def csv_fieldnames():
     fields = ["post_slug", "title"]
     for i in range(1, SLIDE_COUNT + 1):
-        fields += [f"slide{i}_headline", f"slide{i}_body"]
+        fields += [f"slide{i}_headline", f"slide{i}_body", f"slide{i}_image_prompt"]
     fields += ["caption", "hashtags"]
     return fields
 
@@ -208,6 +215,7 @@ def csv_row_for(slug, title, content):
     for i, slide in enumerate(content["carousel"]["slides"], start=1):
         row[f"slide{i}_headline"] = slide["headline"]
         row[f"slide{i}_body"] = slide["body"]
+        row[f"slide{i}_image_prompt"] = slide["image_prompt"]
     row["caption"] = content["carousel"]["caption"]
     row["hashtags"] = " ".join(content["carousel"]["hashtags"])
     return row
