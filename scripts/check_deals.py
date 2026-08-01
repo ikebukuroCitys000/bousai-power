@@ -71,9 +71,13 @@ def fetch_item(application_id, access_key, keyword=None, item_code=None):
     else:
         raise ValueError("keyword or item_code is required")
 
+    # 2026年のインフラ刷新でOrigin/Refererの検証が必須になった。
     # Rakuten Web Serviceのアプリ登録時に "Allowed websites" として
-    # 登録したドメインと一致させておく（未登録だと弾かれる可能性があるため）
-    headers = {"Referer": "https://ikebukuroCitys000.github.io/bousai-power/"}
+    # 登録した自サイトのドメインと一致させる（他ドメインを偽装しない）。
+    headers = {
+        "Origin": "https://ikebukuroCitys000.github.io",
+        "Referer": "https://ikebukuroCitys000.github.io/bousai-power/",
+    }
     resp = requests.get(API_ENDPOINT, params=params, headers=headers, timeout=15)
     resp.raise_for_status()
     data = resp.json()
