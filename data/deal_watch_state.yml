@@ -1,1 +1,21 @@
-{}
+jackery_1000:
+  rakuten_item_code: jackery-japan:10000025
+  last_price: 119800
+ecoflow_river2:
+  rakuten_item_code: ecoflow:10000146
+  last_price: 99700
+anker_767:
+  rakuten_item_code: pfdc:10080958
+  last_price: 998
+solar_panel_100w:
+  rakuten_item_code: jackery-japan:10000009
+  last_price: 34800
+bousai_backpack:
+  rakuten_item_code: nayami-kaiketu:10000630
+  last_price: 15800
+portable_toilet:
+  rakuten_item_code: pykespeak:10002322
+  last_price: 1280
+water_storage:
+  rakuten_item_code: jyonetsubatake:10000342
+  last_price: 1268
