@@ -81,6 +81,9 @@ def fetch_item(application_id, access_key, keyword=None, item_code=None):
     resp = requests.get(API_ENDPOINT, params=params, headers=headers, timeout=15)
     resp.raise_for_status()
     data = resp.json()
+    if os.environ.get("DEAL_DEBUG"):
+        print(f"  [debug] raw response for keyword={params.get('keyword')!r} itemCode={params.get('itemCode')!r}:")
+        print(" ", json.dumps(data, ensure_ascii=False)[:800])
     items = data.get("items", [])
     if not items:
         return None
