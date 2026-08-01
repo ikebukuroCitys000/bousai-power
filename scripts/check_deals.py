@@ -84,7 +84,10 @@ def fetch_item(application_id, access_key, keyword=None, item_code=None):
     if os.environ.get("DEAL_DEBUG"):
         print(f"  [debug] raw response for keyword={params.get('keyword')!r} itemCode={params.get('itemCode')!r}:")
         print(" ", json.dumps(data, ensure_ascii=False)[:800])
-    items = data.get("items", [])
+    # このAPIの実際のレスポンスは "Items"（大文字始まり）。formatVersion=2でも
+    # 小文字 "items" ではなく大文字始まりで返ってくることを実機で確認済み。
+    # 将来の仕様変更に備え両方を見る。
+    items = data.get("Items") or data.get("items") or []
     if not items:
         return None
     return items[0]
