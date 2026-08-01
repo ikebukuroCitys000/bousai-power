@@ -127,6 +127,8 @@ def main():
             )
         except requests.RequestException as e:
             print(f"警告: {key} の価格取得に失敗しました: {e}")
+            if getattr(e, "response", None) is not None:
+                print(f"  レスポンス本文: {e.response.text[:500]}")
             continue
 
         if not item:
