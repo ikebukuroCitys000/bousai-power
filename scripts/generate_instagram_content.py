@@ -7,15 +7,20 @@ draft, asks Claude to turn the article into:
 
 If OPENAI_API_KEY is set, each carousel slide's image_prompt is also sent
 to an image-generation model (gpt-image-1) to actually produce the
-illustration, saved under sns_drafts/images/ and committed to the repo.
-Since this repo is public, the committed PNGs are reachable at a
+illustration, and the slide's headline is then composited directly onto
+that image (bold, high-contrast, on a solid rounded banner) with Pillow
+— so the resulting PNG is a finished slide, not just a background. Files
+are saved under sns_drafts/images/ and committed to the repo. Since this
+repo is public, the committed PNGs are reachable at a
 raw.githubusercontent.com URL — that URL is written into the
 slide{N}_image column of canva_carousel.csv, and Canva's "Bulk create"
 can pull an image directly from a URL in an image-type field. So once
-the Canva template has image placeholders tagged, no manual image
-upload/paste step is needed. If OPENAI_API_KEY is not set, image
-generation is skipped and only the text image_prompt is produced (for
-manual use in Canva's Magic Media).
+the Canva template has an image placeholder tagged, no manual image
+upload/paste (and no separate headline text field) is needed — only the
+body/caption/hashtag text fields still come from Canva. If OPENAI_API_KEY
+is not set, image generation is skipped and only the text image_prompt
+is produced (for manual use in Canva's Magic Media), with the headline
+staying as a normal Canva text field in that fallback case.
 
 Video editing/filming (e.g. in CapCut) and posting itself stay manual.
 
@@ -48,6 +53,7 @@ from pathlib import Path
 
 import anthropic
 import yaml
+from PIL import Image, ImageDraw, ImageFont
 
 try:
     from openai import OpenAI
@@ -59,6 +65,7 @@ POSTS_DIR = ROOT / "_posts"
 DRAFTS_DIR = ROOT / "sns_drafts"
 CANVA_CSV_PATH = DRAFTS_DIR / "canva_carousel.csv"
 IMAGES_DIR = DRAFTS_DIR / "images"
+TITLE_FONT_PATH = ROOT / "assets" / "fonts" / "MPLUSRounded1c-Bold.ttf"
 
 MODEL = os.environ.get("ARTICLE_MODEL", "claude-haiku-4-5-20251001")
 
@@ -231,11 +238,80 @@ def generate_slide_images(image_client, slug, slides):
             )
             image_bytes = base64.b64decode(response.data[0].b64_json)
             out_path.write_bytes(image_bytes)
+            overlay_title(out_path, slide["headline"])
             slide["image_file"] = filename
         except Exception as exc:  # noqa: BLE001 — 1枚失敗しても他のスライド生成は続ける
             print(f"警告: 画像生成に失敗しました（{filename}）: {exc}")
             slide["image_file"] = ""
     return slides
+
+
+def _wrap_title(draw, text, font, max_width):
+    """1文字ずつ幅を測りながら、max_widthに収まるよう改行する（日本語は分かち書きが無いため文字単位）。"""
+    lines = []
+    current = ""
+    for ch in text:
+        trial = current + ch
+        if not current or draw.textlength(trial, font=font) <= max_width:
+            current = trial
+        else:
+            lines.append(current)
+            current = ch
+    if current:
+        lines.append(current)
+    return lines
+
+
+def overlay_title(image_path, title_text):
+    """生成済みイラストの上部に、太字・高コントラストの見出しバナーを焼き込む。
+    Canva側では見出し用テキストフィールドを別途用意しなくてよくなる。"""
+    img = Image.open(image_path).convert("RGBA")
+    w, h = img.size
+    draw = ImageDraw.Draw(img)
+
+    margin = int(w * 0.06)
+    max_text_width = w - margin * 2
+
+    font_size = int(w * 0.095)
+    font = ImageFont.truetype(str(TITLE_FONT_PATH), font_size)
+    lines = _wrap_title(draw, title_text, font, max_text_width)
+    while len(lines) > 2 and font_size > 30:
+        font_size -= 4
+        font = ImageFont.truetype(str(TITLE_FONT_PATH), font_size)
+        lines = _wrap_title(draw, title_text, font, max_text_width)
+
+    line_height = max(draw.textbbox((0, 0), line, font=font)[3] for line in lines)
+    line_spacing = int(line_height * 0.25)
+    band_padding_v = int(font_size * 0.55)
+    band_height = band_padding_v * 2 + line_height * len(lines) + line_spacing * (len(lines) - 1)
+    band_top = int(h * 0.045)
+    band_radius = int(band_height * 0.22)
+
+    overlay = Image.new("RGBA", img.size, (0, 0, 0, 0))
+    odraw = ImageDraw.Draw(overlay)
+    odraw.rounded_rectangle(
+        [margin * 0.5, band_top, w - margin * 0.5, band_top + band_height],
+        radius=band_radius,
+        fill=(18, 33, 58, 235),  # サイトのアクセント系に寄せた濃紺、視認性重視でほぼ不透明
+    )
+    img = Image.alpha_composite(img, overlay)
+    draw = ImageDraw.Draw(img)
+
+    y = band_top + band_padding_v
+    for line in lines:
+        line_w = draw.textlength(line, font=font)
+        x = (w - line_w) / 2
+        draw.text(
+            (x, y),
+            line,
+            font=font,
+            fill=(255, 255, 255, 255),
+            stroke_width=max(2, int(font_size * 0.045)),
+            stroke_fill=(18, 33, 58, 255),
+        )
+        y += line_height + line_spacing
+
+    img.convert("RGB").save(image_path)
 
 
 def pad_or_trim_slides(slides):
@@ -257,7 +333,10 @@ def render_draft(slug, title, content):
         lines.append(slide["body"])
         lines.append(f"_挿絵の指示: {slide['image_prompt']}_")
         if slide.get("image_file"):
-            lines.append(f"_挿絵ファイル（自動生成済み）: sns_drafts/images/{slide['image_file']}_")
+            lines.append(
+                f"_挿絵ファイル（自動生成済み・見出しも画像に焼き込み済み）: "
+                f"sns_drafts/images/{slide['image_file']}_"
+            )
         lines.append("")
     lines.append("**キャプション**")
     lines.append(content["carousel"]["caption"])
