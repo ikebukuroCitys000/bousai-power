@@ -68,6 +68,20 @@ IMAGE_MODEL = os.environ.get("IMAGE_MODEL", "gpt-image-1")
 IMAGE_SIZE = os.environ.get("IMAGE_SIZE", "1024x1536")  # 縦長。IGカルーセル比率に近い
 IMAGE_QUALITY = os.environ.get("IMAGE_QUALITY", "low")  # コスト優先。要望あればmedium/highに
 
+# 7枚を1つのシリーズとして統一感を出すための固定スタイル指定。
+# サイトのCSSアクセントカラー（assets/css/style.scssの--accent系）に寄せてある。
+IMAGE_STYLE_ANCHOR = (
+    "フラットデザインのベクターイラスト。背景は濃紺（#12213aあたり）を基調にし、"
+    "差し色として暖色のアンバー/黄色（#f5c451あたり）とグリーン（#4fd1a5あたり、"
+    "充電・安心を示す色として）を使う。厚塗りやリアルすぎる質感は避け、"
+    "シンプルな面と輪郭線で構成する、シリーズ7枚に共通するトーン＆マナー。"
+)
+IMAGE_NEGATIVE_INSTRUCTION = (
+    "画像内に文字・数字・単位・吹き出し・ラベル・ロゴ・透かしは絶対に描画しないこと"
+    "（テキストはCanva側で別レイヤーとして重ねるため、画像に文字が写り込むと二重表示になり不可）。"
+    "実在する人物・有名人・商標ロゴも描かないこと。"
+)
+
 # コミット済み画像を参照する公開URLのベース（このリポジトリはpublicなのでraw経由で取得可能）
 GITHUB_RAW_BASE = "https://raw.githubusercontent.com/ikebukuroCitys000/bousai-power/main"
 
@@ -201,8 +215,8 @@ def generate_slide_images(image_client, slug, slides):
                 model=IMAGE_MODEL,
                 prompt=(
                     f"{slide['image_prompt']}。"
-                    "フラットデザインのイラスト、Instagramカルーセル投稿の挿絵として使う、"
-                    "文字は入れない、実在の人物や商標ロゴは描かない。"
+                    f"{IMAGE_STYLE_ANCHOR} "
+                    f"{IMAGE_NEGATIVE_INSTRUCTION}"
                 ),
                 size=IMAGE_SIZE,
                 quality=IMAGE_QUALITY,
