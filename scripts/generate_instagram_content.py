@@ -5,21 +5,32 @@ draft, asks Claude to turn the article into:
   - a carousel slide breakdown (headline + short body per slide) + caption + hashtags
   - a Reels shooting script (hook + scene-by-scene) + caption + hashtags
 
-This only produces the *content* to build from — actual slide design
-(e.g. in Canva) and video editing/filming (e.g. in CapCut) stay manual,
-and so does posting itself.
+If OPENAI_API_KEY is set, each carousel slide's image_prompt is also sent
+to an image-generation model (gpt-image-1) to actually produce the
+illustration, saved under sns_drafts/images/ and committed to the repo.
+Since this repo is public, the committed PNGs are reachable at a
+raw.githubusercontent.com URL — that URL is written into the
+slide{N}_image column of canva_carousel.csv, and Canva's "Bulk create"
+can pull an image directly from a URL in an image-type field. So once
+the Canva template has image placeholders tagged, no manual image
+upload/paste step is needed. If OPENAI_API_KEY is not set, image
+generation is skipped and only the text image_prompt is produced (for
+manual use in Canva's Magic Media).
+
+Video editing/filming (e.g. in CapCut) and posting itself stay manual.
 
 Carousel slide count is fixed at 7 (hook, 5x body, CTA) so the output
 also lands in sns_drafts/canva_carousel.csv in wide format — one row
-per post, with a slide1_headline/slide1_body ... slide7_headline/
-slide7_body column pair per slide. Build a matching 7-frame Canva
-template with those field names tagged, then use Canva's "Bulk create"
-to generate all slides for all posts in one pass. Reels have no Canva
-equivalent (no CSV-driven video timeline), so those stay in the
-per-post .md file only.
+per post, with a slide1_headline/slide1_body/slide1_image ... slide7_*
+column set per slide. Build a matching 7-frame Canva template with
+those field names tagged (image fields as "image" type), then use
+Canva's "Bulk create" to generate all slides for all posts in one pass.
+Reels have no Canva equivalent (no CSV-driven video timeline), so those
+stay in the per-post .md file only.
 
 Usage:
     ANTHROPIC_API_KEY=... python3 scripts/generate_instagram_content.py
+    ANTHROPIC_API_KEY=... OPENAI_API_KEY=... python3 scripts/generate_instagram_content.py
     ANTHROPIC_API_KEY=... python3 scripts/generate_instagram_content.py <slug> [<slug> ...]
 
 With no arguments, processes every post in _posts/ that doesn't already
@@ -27,6 +38,7 @@ have a sns_drafts/<slug>-instagram.md file. Pass one or more slugs
 (the post filename without the .md extension) to force regeneration for
 specific posts.
 """
+import base64
 import csv
 import json
 import os
@@ -37,14 +49,27 @@ from pathlib import Path
 import anthropic
 import yaml
 
+try:
+    from openai import OpenAI
+except ImportError:
+    OpenAI = None
+
 ROOT = Path(__file__).resolve().parent.parent
 POSTS_DIR = ROOT / "_posts"
 DRAFTS_DIR = ROOT / "sns_drafts"
 CANVA_CSV_PATH = DRAFTS_DIR / "canva_carousel.csv"
+IMAGES_DIR = DRAFTS_DIR / "images"
 
 MODEL = os.environ.get("ARTICLE_MODEL", "claude-haiku-4-5-20251001")
 
 SLIDE_COUNT = 7  # 1:フック 2-6:本文 7:CTA。Canvaの固定7枚テンプレートに合わせる
+
+IMAGE_MODEL = os.environ.get("IMAGE_MODEL", "gpt-image-1")
+IMAGE_SIZE = os.environ.get("IMAGE_SIZE", "1024x1536")  # 縦長。IGカルーセル比率に近い
+IMAGE_QUALITY = os.environ.get("IMAGE_QUALITY", "low")  # コスト優先。要望あればmedium/highに
+
+# コミット済み画像を参照する公開URLのベース（このリポジトリはpublicなのでraw経由で取得可能）
+GITHUB_RAW_BASE = "https://raw.githubusercontent.com/ikebukuroCitys000/bousai-power/main"
 
 INSTAGRAM_SCHEMA = {
     "type": "object",
@@ -159,6 +184,39 @@ def generate_instagram_content(client, title, body):
     return content
 
 
+def generate_slide_images(image_client, slug, slides):
+    """image_promptから実際にイラストを生成し、slides各要素に image_file
+    （ファイル名。失敗時は空文字）を追加する。image_clientがNoneなら何もしない。"""
+    if image_client is None:
+        for slide in slides:
+            slide["image_file"] = ""
+        return slides
+
+    IMAGES_DIR.mkdir(parents=True, exist_ok=True)
+    for i, slide in enumerate(slides, start=1):
+        filename = f"{slug}-slide{i}.png"
+        out_path = IMAGES_DIR / filename
+        try:
+            response = image_client.images.generate(
+                model=IMAGE_MODEL,
+                prompt=(
+                    f"{slide['image_prompt']}。"
+                    "フラットデザインのイラスト、Instagramカルーセル投稿の挿絵として使う、"
+                    "文字は入れない、実在の人物や商標ロゴは描かない。"
+                ),
+                size=IMAGE_SIZE,
+                quality=IMAGE_QUALITY,
+                n=1,
+            )
+            image_bytes = base64.b64decode(response.data[0].b64_json)
+            out_path.write_bytes(image_bytes)
+            slide["image_file"] = filename
+        except Exception as exc:  # noqa: BLE001 — 1枚失敗しても他のスライド生成は続ける
+            print(f"警告: 画像生成に失敗しました（{filename}）: {exc}")
+            slide["image_file"] = ""
+    return slides
+
+
 def pad_or_trim_slides(slides):
     """スキーマでは強制できないため、7枚ちょうどになるよう実行時に揃える。"""
     slides = list(slides[:SLIDE_COUNT])
@@ -177,6 +235,8 @@ def render_draft(slug, title, content):
         lines.append(f"**スライド{i}: {slide['headline']}**")
         lines.append(slide["body"])
         lines.append(f"_挿絵の指示: {slide['image_prompt']}_")
+        if slide.get("image_file"):
+            lines.append(f"_挿絵ファイル（自動生成済み）: sns_drafts/images/{slide['image_file']}_")
         lines.append("")
     lines.append("**キャプション**")
     lines.append(content["carousel"]["caption"])
@@ -205,7 +265,12 @@ def render_draft(slug, title, content):
 def csv_fieldnames():
     fields = ["post_slug", "title"]
     for i in range(1, SLIDE_COUNT + 1):
-        fields += [f"slide{i}_headline", f"slide{i}_body", f"slide{i}_image_prompt"]
+        fields += [
+            f"slide{i}_headline",
+            f"slide{i}_body",
+            f"slide{i}_image_prompt",
+            f"slide{i}_image",
+        ]
     fields += ["caption", "hashtags"]
     return fields
 
@@ -216,6 +281,8 @@ def csv_row_for(slug, title, content):
         row[f"slide{i}_headline"] = slide["headline"]
         row[f"slide{i}_body"] = slide["body"]
         row[f"slide{i}_image_prompt"] = slide["image_prompt"]
+        image_file = slide.get("image_file")
+        row[f"slide{i}_image"] = f"{GITHUB_RAW_BASE}/sns_drafts/images/{image_file}" if image_file else ""
     row["caption"] = content["carousel"]["caption"]
     row["hashtags"] = " ".join(content["carousel"]["hashtags"])
     return row
@@ -244,6 +311,15 @@ def main():
     api_key = os.environ.get("ANTHROPIC_API_KEY")
     if not api_key:
         sys.exit("ANTHROPIC_API_KEY is not set")
+
+    openai_api_key = os.environ.get("OPENAI_API_KEY")
+    image_client = None
+    if openai_api_key and OpenAI is not None:
+        image_client = OpenAI(api_key=openai_api_key)
+    elif openai_api_key and OpenAI is None:
+        print("警告: openaiパッケージが未インストールのため画像生成をスキップします（pip install -r requirements.txt）")
+    else:
+        print("OPENAI_API_KEY未設定のため、挿絵の自動生成はスキップします（image_promptのテキストのみ生成）")
 
     requested_slugs = sys.argv[1:]
     DRAFTS_DIR.mkdir(exist_ok=True)
@@ -278,6 +354,7 @@ def main():
 
         print(f"生成中: {title}")
         content = generate_instagram_content(client, title, body)
+        content["carousel"]["slides"] = generate_slide_images(image_client, slug, content["carousel"]["slides"])
         draft_text = render_draft(slug, title, content)
 
         draft_path = DRAFTS_DIR / f"{slug}-instagram.md"

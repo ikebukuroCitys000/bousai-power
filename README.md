@@ -109,46 +109,64 @@ products: [jackery_1000, ecoflow_river2, 追加したkey]
 
 ## Instagram（カルーセル・リール）のコンテンツ自動生成
 
-`.github/workflows/instagram-content.yml` が毎日07:00 JSTに動き、`sns_drafts/` にInstagram下書きがまだ無いブログ記事を見つけて、Claude APIで**カルーセル投稿**と**リール投稿**の台本を自動生成します。**画像・動画の制作、投稿そのものは手動**です。
+`.github/workflows/instagram-content.yml` が毎日07:00 JSTに動き、`sns_drafts/` にInstagram下書きがまだ無いブログ記事を見つけて、Claude APIで**カルーセル投稿**と**リール投稿**の台本を自動生成します。さらに`OPENAI_API_KEY`を登録していれば、各スライドの**挿絵イラストも画像生成AI（gpt-image-1）で自動生成**され、Canvaの一括作成に直接差し込める状態まで自動化されます。**動画の制作、投稿そのものは手動**です。
 
 ### 生成される内容
 
-- **カルーセル**: 必ず7枚固定（1枚目フック／2〜6枚目本文／7枚目CTA）＋キャプション＋ハッシュタグ10〜15個
+- **カルーセル**: 必ず7枚固定（1枚目フック／2〜6枚目本文／7枚目CTA）＋各スライドの挿絵（画像生成AI）＋キャプション＋ハッシュタグ10〜15個
 - **リール**: 15〜30秒想定のシーン割り（映像指示＋画面テキスト＋秒数）＋フック文＋キャプション＋ハッシュタグ
 
-出力先は2つあります。
+出力先は3つあります。
 
-- `sns_drafts/<記事のスラッグ>-instagram.md` — 人が読む用の台本（カルーセル・リール両方）
-- `sns_drafts/canva_carousel.csv` — **Canvaの「一括作成(Bulk Create)」にそのまま読み込める横持ちCSV**（カルーセルのみ。1記事＝1行、実行のたびに追記・更新される）
+- `sns_drafts/<記事のスラッグ>-instagram.md` — 人が読む用の台本（カルーセル・リール両方、挿絵ファイルへのパス付き）
+- `sns_drafts/images/<スラッグ>-slide<N>.png` — スライドごとに自動生成された挿絵（`OPENAI_API_KEY`未設定時は生成されない）
+- `sns_drafts/canva_carousel.csv` — **Canvaの「一括作成(Bulk Create)」にそのまま読み込める横持ちCSV**（カルーセルのみ。1記事＝1行、実行のたびに追記・更新される。`slide{N}_image`列には生成した画像のURLが入る）
 
 リールはCanva側にCSVからの動画自動生成の仕組みがないため、`.md`の台本を見ながらCapCut等で手動編集してください。
+
+### 画像生成AIのセットアップ（挿絵の自動生成、任意）
+
+1. [platform.openai.com](https://platform.openai.com/) でAPIキーを発行する（要アカウント登録・支払い方法の登録はご自身で行ってください）
+2. リポジトリにSecretとして登録
+
+```bash
+gh secret set OPENAI_API_KEY --repo ikebukuroCitys000/bousai-power
+```
+
+（GitHub Web UIの Settings → Secrets and variables → Actions からでも登録可能です）
+
+3. 未設定のままでもワークフローはエラーになりません。台本の`image_prompt`（挿絵の指示文）だけが出力され、Canvaのマジック生成に手動でコピペする従来フローに自動的にフォールバックします。
+
+**コストの目安**（2026年時点のgpt-image-1料金、変動する可能性があるため[公式の料金ページ](https://platform.openai.com/docs/pricing)で要確認）: `IMAGE_QUALITY=low` の初期設定で1枚あたり約$0.01〜0.02。1記事7枚×週1〜数記事のペースなら月あたり数百円程度。画質を上げたい場合は環境変数 `IMAGE_QUALITY=medium` または `high` をワークフロー側に追加してください。
 
 ### Canva側の一度きりのセットアップ（カルーセル用）
 
 1. Canvaで7ページのカルーセル用テンプレートを1つ作成する（Instagramの投稿サイズ 1080×1350等）
-2. 各ページのテキスト枠を選択し、「データを接続」で以下のフィールド名をタグ付けする（`slide1_headline` 〜 `slide7_body`、`title`、`caption`、`hashtags` はお好みで配置）
+2. 各ページのテキスト枠を選択し、「データを接続」で以下のフィールド名をタグ付けする（`title`、`caption`、`hashtags` はお好みで配置）
 
-   | ページ | 見出し用フィールド | 本文用フィールド |
-   |---|---|---|
-   | 1枚目 | `slide1_headline` | `slide1_body` |
-   | 2枚目 | `slide2_headline` | `slide2_body` |
-   | … | … | … |
-   | 7枚目 | `slide7_headline` | `slide7_body` |
+   | ページ | 見出し用フィールド | 本文用フィールド | 画像用フィールド |
+   |---|---|---|---|
+   | 1枚目 | `slide1_headline` | `slide1_body` | `slide1_image` |
+   | 2枚目 | `slide2_headline` | `slide2_body` | `slide2_image` |
+   | … | … | … | … |
+   | 7枚目 | `slide7_headline` | `slide7_body` | `slide7_image` |
+
+   画像用フレームには、テキスト枠と同じ「データを接続」から画像プレースホルダーを選び、`slide{N}_image` を紐づけてください。CSVのその列には画像ファイルの公開URL（`https://raw.githubusercontent.com/...`）が入っているので、Canvaが自動的にURL先の画像を取得してフレームに差し込みます（手元でのアップロード操作は不要です）。`OPENAI_API_KEY`未設定で画像が生成されていない行はこの列が空になるので、その場合だけ手動で写真を入れてください。
 
 3. テンプレート上部メニューの「一括作成」→「CSVをアップロード」から `sns_drafts/canva_carousel.csv` を選択
-4. フィールドの対応が自動または手動で紐づいたら「生成」。**行(記事)ごとに7ページのカルーセルが自動でまとめて出来上がります**
-5. 生成後、実際の投稿前に一言二言、手直し・写真差し替えをして仕上げてください
+4. フィールドの対応が自動または手動で紐づいたら「生成」。**行(記事)ごとに7ページのカルーセルが挿絵込みで自動でまとめて出来上がります**
+5. 生成後、実際の投稿前に一言二言、手直しをして仕上げてください
 
 一度テンプレートを作ってしまえば、以降は新しい記事が増えるたびにCSVへ行が追記されるので、そのCSVを都度アップロードし直すだけで新規カルーセルが作れます。
 
 ### 手動実行・特定記事の再生成
 
 ```bash
-# 未生成の記事だけまとめて処理
-ANTHROPIC_API_KEY=sk-ant-... python3 scripts/generate_instagram_content.py
+# 未生成の記事だけまとめて処理（挿絵も生成する場合はOPENAI_API_KEYも渡す）
+ANTHROPIC_API_KEY=sk-ant-... OPENAI_API_KEY=sk-... python3 scripts/generate_instagram_content.py
 
 # 特定の記事だけ強制的に再生成したい場合（スラッグ = _postsのファイル名から.mdを除いたもの）
-ANTHROPIC_API_KEY=sk-ant-... python3 scripts/generate_instagram_content.py 2026-07-30-capacity-calculation
+ANTHROPIC_API_KEY=sk-ant-... OPENAI_API_KEY=sk-... python3 scripts/generate_instagram_content.py 2026-07-30-capacity-calculation
 ```
 
 GitHub Actionsから手動実行する場合は、Actionsタブの `Instagram content` ワークフローから `Run workflow` を押してください。
