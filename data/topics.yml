@@ -65,7 +65,8 @@
   products:
   - solar_panel_100w
   - jackery_1000
-  status: pending
+  status: published
+  published_date: '2026-08-02'
 - slug: bousai-backpack-checklist-2026
   title: 防災リュックに入れておきたい持ち出し品リスト2026年版
   angle: 最新の推奨品目を踏まえた持ち出し袋の中身チェックリスト
@@ -77,7 +78,8 @@
   products:
   - bousai_backpack
   - water_storage
-  status: pending
+  status: published
+  published_date: '2026-08-02'
 - slug: portable-toilet-guide
   title: 簡易トイレ・非常用トイレの選び方と備蓄量の目安
   angle: 断水時に困りやすいトイレ問題への備え方、1人あたりの必要個数の目安
