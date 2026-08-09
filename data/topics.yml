@@ -90,7 +90,8 @@
   category: 防災グッズ
   products:
   - portable_toilet
-  status: pending
+  status: published
+  published_date: '2026-08-09'
 - slug: rolling-stock-guide
   title: 非常用飲料水・食料の備蓄「ローリングストック」入門
   angle: 特別な非常食に頼りすぎない、日常の延長でできる備蓄方法を紹介する
@@ -102,7 +103,8 @@
   category: 防災グッズ
   products:
   - water_storage
-  status: pending
+  status: published
+  published_date: '2026-08-09'
 - slug: rental-vs-purchase
   title: ポータブル電源はレンタルと購入どちらがお得？
   angle: 短期利用と長期防災備蓄それぞれの観点からコストを比較する
