@@ -117,7 +117,8 @@
   products:
   - jackery_1000
   - ecoflow_river2
-  status: pending
+  status: published
+  published_date: '2026-08-16'
 - slug: nankai-trough-review
   title: 南海トラフ地震臨時情報後に見直したい防災グッズ
   angle: 情報発表を機に見直しが進んだ項目を、家庭でのチェック観点としてまとめる
@@ -130,7 +131,8 @@
   - bousai_backpack
   - jackery_1000
   - water_storage
-  status: pending
+  status: published
+  published_date: '2026-08-16'
 - slug: vertical-evacuation-prep
   title: 在宅避難（垂直避難）に必要な備えとは
   angle: 避難所に行かず自宅で過ごす場合に必要になる備蓄・電源の考え方
