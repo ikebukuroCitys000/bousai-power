@@ -145,7 +145,8 @@
   - jackery_1000
   - water_storage
   - portable_toilet
-  status: pending
+  status: published
+  published_date: '2026-08-23'
 - slug: high-rise-condo-bousai
   title: マンション高層階の防災対策とポータブル電源の活用
   angle: エレベーター停止・断水時の高層階特有の課題と備え方
@@ -159,7 +160,8 @@
   - jackery_1000
   - portable_toilet
   - water_storage
-  status: pending
+  status: published
+  published_date: '2026-08-23'
 - slug: typhoon-season-checkup
   title: 台風・停電シーズン前にやっておきたい防災点検
   angle: シーズン前に行うべき点検項目をチェックリスト形式で提示する
