@@ -173,7 +173,8 @@
   products:
   - jackery_1000
   - bousai_backpack
-  status: pending
+  status: published
+  published_date: '2026-08-30'
 - slug: power-station-lifespan-storage
   title: ポータブル電源の寿命・劣化と正しい保管方法
   angle: バッテリー劣化を防ぐ保管温度や定期充電の目安を解説する
@@ -186,7 +187,8 @@
   products:
   - anker_767
   - jackery_1000
-  status: pending
+  status: published
+  published_date: '2026-08-30'
 - slug: compact-power-station-for-solo-camp
   title: 小型・軽量ポータブル電源おすすめ｜ソロキャンプ・女性にも
   angle: 持ち運びやすさを重視する人向けに、軽量モデルの選定基準を紹介する
