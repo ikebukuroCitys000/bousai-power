@@ -199,7 +199,8 @@
   category: 活用シーン
   products:
   - ecoflow_river2
-  status: pending
+  status: published
+  published_date: '2026-09-06'
 - slug: home-battery-vs-power-station
   title: 家庭用蓄電池とポータブル電源の違いは？
   angle: 工事が必要な据え置き型との違いを整理し、どちらが合うか判断できるようにする
@@ -211,7 +212,8 @@
   products:
   - jackery_1000
   - anker_767
-  status: pending
+  status: published
+  published_date: '2026-09-06'
 - slug: bousai-day-checkup
   title: 防災の日（9月1日）に見直す我が家の防災グッズ
   angle: 年に一度の点検タイミングとして、家族で確認すべき項目をまとめる
